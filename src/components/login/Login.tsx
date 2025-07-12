@@ -13,22 +13,24 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState<"user" | "restaurant">("user");
   const [error, setError] = useState<string | null>(null);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const router = useRouter();
   const { user, loading } = useAuth();
 
   useEffect(() => {
-    if (!loading && user) {
+    if (!loading && user && hasSubmitted) {
       if (role === "restaurant") {
         router.push("/restaurant/dashboard");
       } else {
         router.push("/dashboard");
       }
     }
-  }, [user, loading, router, role]);
+  }, [user, loading, router, role, hasSubmitted]);
 
   const handleLogin = async () => {
     setError(null);
+    setHasSubmitted(true);
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -37,6 +39,7 @@ export default function Login() {
 
     if (error) {
       setError(error.message);
+      setHasSubmitted(false);
     }
   };
 

@@ -9,7 +9,7 @@ const ProfilePage: React.FC = () => {
       <Profile
         name="Franco Barros"
         email="franco.barros@example.com"
-        avatarUrl="/images/comida1.png" // Asegurate que la imagen exista en /public/images/
+        avatarUrl="/images/comida1.png"
         bio="Apasionado desarrollador fullstack, amante de la comida y la tecnología."
       />
     </main>

@@ -102,7 +102,7 @@ const Dashboard = () => {
         <Modal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
-          userId={user?.id} // ✅ pasa el userId a Supabase
+          userId={user?.id}
         />
       )}
     </motion.div>

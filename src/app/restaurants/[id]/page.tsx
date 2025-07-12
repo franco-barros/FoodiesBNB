@@ -6,7 +6,7 @@ import { ReserveButton } from "../../../components/reservebutton";
 type PageProps = Readonly<{ params: Promise<{ id: string }> }>;
 
 export default async function RestaurantDetailPage({ params }: PageProps) {
-  const { id } = await params; // await porque es Promise
+  const { id } = await params;
 
   const restaurant = mockRestaurants.find((r) => r.id === id);
 

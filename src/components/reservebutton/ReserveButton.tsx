@@ -35,7 +35,6 @@ const ReserveButton: React.FC<ReserveButtonProps> = ({ restaurantName }) => {
     setLoadingSubmit(true);
 
     try {
-      // Convertir "HH:mm" a timestamp ISO
       const scheduledAt = new Date();
       const [hours, minutes] = time.split(":").map(Number);
       scheduledAt.setHours(hours, minutes, 0, 0);
@@ -69,10 +68,8 @@ const ReserveButton: React.FC<ReserveButtonProps> = ({ restaurantName }) => {
     }
   };
 
-  // Si está cargando sesión, podés mostrar un loader o nada
   if (loading) return null;
 
-  // Extraigo la lógica para el contenido del modal y evitar ternarios anidados
   let modalContent;
   if (!userId) {
     modalContent = (
