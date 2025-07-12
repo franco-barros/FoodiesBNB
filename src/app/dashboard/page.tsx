@@ -1,18 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { CardRestaurant } from "../../components/cardrestaurants";
 import { SearchBar } from "../../components/searchbar";
 import { mockRestaurants } from "../../data/mockrestaurants";
 import { Modal } from "../../components/modal";
 import { DashboardHeaderExtras } from "../../components/dashboardheaderextras";
+import { useAuth } from "../../hooks/useAuth";
 import type { Restaurant } from "../../types/restaurant";
 
 const Dashboard = () => {
+  const { user } = useAuth();
   const [selected, setSelected] = useState<Restaurant | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [confirmationMsg, setConfirmationMsg] = useState("");
 
   const [filters, setFilters] = useState({
     term: "",
@@ -36,23 +37,14 @@ const Dashboard = () => {
     return nameMatch && cuisineMatch && foodMatch;
   });
 
-  useEffect(() => {
-    if (confirmationMsg) {
-      const timer = setTimeout(() => setConfirmationMsg(""), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [confirmationMsg]);
-
   const handleOpenReserveModal = (restaurant: Restaurant) => {
     setSelected(restaurant);
     setIsModalOpen(true);
-    setConfirmationMsg("");
   };
 
   const handleCloseModal = () => {
     setSelected(null);
     setIsModalOpen(false);
-    setConfirmationMsg("");
   };
 
   return (
@@ -78,7 +70,6 @@ const Dashboard = () => {
         </p>
       </motion.div>
 
-      {/* COMPONENTE NUEVO CON ICONOS */}
       <DashboardHeaderExtras />
 
       {/* Filtros */}
@@ -106,51 +97,14 @@ const Dashboard = () => {
         ))}
       </motion.div>
 
-      {/* Modal solo para reserva */}
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-        {selected && (
-          <>
-            <h2 className="text-xl font-bold mb-4">
-              Programar visita en {selected.name}
-            </h2>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setConfirmationMsg(`Reserva confirmada en ${selected.name}`);
-              }}
-              className="flex flex-col gap-4"
-            >
-              <label htmlFor="hora" className="block">
-                <span>Hora aproximada:</span>
-                <input
-                  id="hora"
-                  type="time"
-                  required
-                  className="mt-1 w-full border border-gray-300 rounded px-3 py-2"
-                />
-              </label>
-              <button
-                type="submit"
-                className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition"
-              >
-                Confirmar reserva
-              </button>
-
-              {confirmationMsg && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="mt-2 text-green-600 font-semibold"
-                >
-                  {confirmationMsg}
-                </motion.p>
-              )}
-            </form>
-          </>
-        )}
-      </Modal>
+      {/* Modal con lógica de agendar cita */}
+      {selected && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          userId={user?.id} // ✅ pasa el userId a Supabase
+        />
+      )}
     </motion.div>
   );
 };

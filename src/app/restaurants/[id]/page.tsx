@@ -1,20 +1,19 @@
 import { notFound } from "next/navigation";
 import { mockRestaurants } from "../../../data/mockrestaurants";
 import Image from "next/image";
-import { ReserveButton } from "../../../components/reservebutton"; // ✅ Import correcto
+import { ReserveButton } from "../../../components/reservebutton";
 
-interface PageProps {
-  params: { id: string };
-}
+type PageProps = Readonly<{ params: Promise<{ id: string }> }>;
 
-export default function RestaurantDetailPage({ params }: PageProps) {
-  const restaurant = mockRestaurants.find((r) => r.id === params.id);
+export default async function RestaurantDetailPage({ params }: PageProps) {
+  const { id } = await params; // await porque es Promise
+
+  const restaurant = mockRestaurants.find((r) => r.id === id);
 
   if (!restaurant) return notFound();
 
   return (
     <div className="min-h-screen px-4 sm:px-8 pt-28 pb-16 max-w-4xl mx-auto bg-white text-black">
-      {/* Imagen */}
       {restaurant.imageUrl && (
         <div className="relative w-full h-64 mb-6 rounded-lg overflow-hidden shadow">
           <Image
@@ -27,7 +26,6 @@ export default function RestaurantDetailPage({ params }: PageProps) {
         </div>
       )}
 
-      {/* Info */}
       <h1 className="text-3xl font-bold text-red-600 mb-4">
         {restaurant.name}
       </h1>
@@ -48,7 +46,6 @@ export default function RestaurantDetailPage({ params }: PageProps) {
         {restaurant.description || "No disponible"}
       </p>
 
-      {/* Botón separado en componente client */}
       <ReserveButton restaurantName={restaurant.name} />
     </div>
   );

@@ -1,22 +1,42 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
+import { supabase } from "../../lib/supabaseClient";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState<"user" | "restaurant">("user");
-  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = () => {
-    if (role === "restaurant") {
-      router.push("/restaurant/dashboard");
-    } else {
-      router.push("/dashboard");
+  const router = useRouter();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && user) {
+      if (role === "restaurant") {
+        router.push("/restaurant/dashboard");
+      } else {
+        router.push("/dashboard");
+      }
+    }
+  }, [user, loading, router, role]);
+
+  const handleLogin = async () => {
+    setError(null);
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setError(error.message);
     }
   };
 
@@ -119,6 +139,11 @@ export default function Login() {
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         </div>
+
+        {/* Error */}
+        {error && (
+          <p className="text-red-600 text-sm mt-2 mb-4 font-medium">{error}</p>
+        )}
 
         {/* Link olvidaste contraseña */}
         <div className="mb-6 flex justify-end text-sm">
